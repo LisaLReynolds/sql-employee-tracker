@@ -2,8 +2,7 @@ const { prompt } = require("inquirer");
 const { Pool } = require("pg");
 const logo = require("asciiart-logo");
 const config = require("./package.json");
-
-init();
+const consoleTable = require("console.table");
 
 //Connection pool to the database
 const pool = new Pool(
@@ -17,14 +16,15 @@ const pool = new Pool(
 );
 
 pool.connect();
+console.log(logo(config).render()); //displays sql employee manager logo
+init();
 
 function init() {
-  console.log(logo(config).render()); //displays sql employee manager logo
   prompt([
     {
       type: "list",
       name: "option",
-      message: "What would you like to do? (Use arrow keys)",
+      message: "What would you like to do?",
       choices: [
         "View all departments",
         "View all roles",
@@ -64,9 +64,28 @@ function init() {
   });
 }
 
-function allDepartments() {}
+function allDepartments() {
+  pool
+    .query("SELECT * FROM department")
+    .then((result) => {
+      console.table(result.rows);
+      init();
+    })
+    .catch((error) => {
+      console.error("Error executing query", error);
+    });
+}
 
-function allEmployees() {}
+function allEmployees() {
+  pool
+    .query("SELECT * FROM employee")
+    .then((result) => {
+      console.table(result.rows);
+    })
+    .catch((error) => {
+      console.error("Error executing query", error);
+    });
+}
 
 function addRole() {}
 
