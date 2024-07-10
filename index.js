@@ -1,7 +1,25 @@
-const inquirer = require("inquirer");
+const { prompt } = require("inquirer");
 const { Pool } = require("pg");
+const logo = require("asciiart-logo");
+const config = require("./package.json");
+
+init();
+
+//Connection pool to the database
+const pool = new Pool(
+  {
+    user: "postgres",
+    password: "root",
+    host: "localhost",
+    database: "business_db",
+  },
+  console.log("Connected to the business_db database.")
+);
+
+pool.connect();
 
 function init() {
+  console.log(logo(config).render()); //displays sql employee manager logo
   prompt([
     {
       type: "list",
@@ -46,9 +64,9 @@ function init() {
   });
 }
 
-function allEmployees() {}
-
 function allDepartments() {}
+
+function allEmployees() {}
 
 function addRole() {}
 
@@ -75,15 +93,25 @@ function addEmployee() {
         value: id,
       }));
 
-      prompt ({
+      prompt({
         type: "list",
         name: "roleId",
         message: "What is the employee's role?",
         choices: roleChoices,
-      }).then(response) => {
+      }).then((response) => {
         let roleId = response.roleId;
         console.log(roleId);
-      }
+
+        //next query for all employees and map over data for managerChoices because a manager is an employee
+
+        //The unshift() method of Array instances adds the specified elements to the beginning of an array and returns the new length of the array
+
+        //managerChoices.unshift({name: 'None', value: null})
+
+        //then prompt for who is the employees manager by passing managerChoices to choices key
+
+        //then create an employee object and call createEmployee()
+      });
     });
   });
 }
