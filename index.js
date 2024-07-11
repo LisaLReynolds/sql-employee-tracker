@@ -2,7 +2,6 @@ const { prompt } = require("inquirer");
 const { Pool } = require("pg");
 const logo = require("asciiart-logo");
 const config = require("./package.json");
-const consoleTable = require("console.table");
 
 //Connection pool to the database
 const pool = new Pool(
@@ -16,7 +15,9 @@ const pool = new Pool(
 );
 
 pool.connect();
+
 console.log(logo(config).render()); //displays sql employee manager logo
+
 init();
 
 function init() {
