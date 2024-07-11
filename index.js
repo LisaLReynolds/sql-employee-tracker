@@ -42,7 +42,7 @@ function init() {
         allDepartments();
         break;
       case "View all roles":
-        console.log("View all roles");
+        allRoles();
         break;
       case "View all employees":
         allEmployees();
@@ -74,6 +74,20 @@ function allDepartments() {
     })
     .catch((error) => {
       console.error("Error executing query", error);
+      init();
+    });
+}
+
+function allRoles() {
+  pool
+    .query("SELECT * FROM role")
+    .then((result) => {
+      console.table(result.rows);
+      init();
+    })
+    .catch((error) => {
+      console.error("Error executing query", error);
+      init();
     });
 }
 
@@ -82,10 +96,35 @@ function allEmployees() {
     .query("SELECT * FROM employee")
     .then((result) => {
       console.table(result.rows);
+      init();
     })
     .catch((error) => {
       console.error("Error executing query", error);
+      init();
     });
+}
+
+// function findRoles() {
+//   return new Promise((resolve, reject) => {
+//     pool.query("SELECT * FROM role", (error, result) => {
+//       if (error) {
+//         reject(error);
+//       } else {
+//         resolve(result.rows);
+//       }
+//     });
+//   });
+// }
+
+function findRoles() {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const result = await pool.query("SELECT id, title FROM role");
+      resolve(result.rows);
+    } catch (error) {
+      reject(error);
+    }
+  });
 }
 
 function addRole() {}
@@ -107,7 +146,7 @@ function addEmployee() {
     findRoles().then(({ rows }) => {
       let roles = rows;
       console.log(roles);
-      //map over roles to get role choices
+      // map over roles to get role choices
       const roleChoices = roles.map(({ id, title }) => ({
         name: title,
         value: id,
