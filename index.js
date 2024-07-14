@@ -34,6 +34,7 @@ function init() {
         "Add a role",
         "Add an employee",
         "Update an employee role",
+        "Exit",
       ],
     },
   ]).then((answers) => {
@@ -58,6 +59,9 @@ function init() {
         break;
       case "Update an employee role":
         console.log("Update an employee role");
+        break;
+      case "Exit":
+        process.exit();
         break;
       default:
         process.exit();
@@ -104,24 +108,27 @@ function allEmployees() {
     });
 }
 
-// function findRoles() {
-//   return new Promise((resolve, reject) => {
-//     pool.query("SELECT * FROM role", (error, result) => {
-//       if (error) {
-//         reject(error);
-//       } else {
-//         resolve(result.rows);
-//       }
-//     });
-//   });
-// }
-
 function findRoles() {
   return new Promise(async (resolve, reject) => {
     try {
       const result = await pool.query("SELECT id, title FROM role");
       resolve(result.rows);
     } catch (error) {
+      console.error("Error executing query", error);
+      reject(error);
+    }
+  });
+}
+
+function findManager() {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const result = await pool.query(
+        "SELECT first_name, last_name FROM employee"
+      );
+      resolve(result.rows);
+    } catch (error) {
+      console.error("Error executing query", error);
       reject(error);
     }
   });
@@ -143,9 +150,7 @@ function addEmployee() {
     let firstName = response.first_name;
     let lastName = response.last_name;
 
-    findRoles().then(({ rows }) => {
-      let roles = rows;
-      console.log(roles);
+    findRoles().then((roles) => {
       // map over roles to get role choices
       const roleChoices = roles.map(({ id, title }) => ({
         name: title,
@@ -159,10 +164,27 @@ function addEmployee() {
         choices: roleChoices,
       }).then((response) => {
         let roleId = response.roleId;
-        console.log(roleId);
-
+        console.log(roleId).query;
         //next query for all employees and map over data for managerChoices because a manager is an employee
+        findManager().then((options) => {
+          const managerChoices = options.map(({ first_name, last_name }) => ({
+            name: `${first_name} ${last_name}`, // Combine first_name and last_name into one string for the name property
+            value: `${first_name}_${last_name}`, // Create a unique value based on first_name and last_name
+          }));
 
+          // Add "None" option to the beginning of the managerChoices array
+          managerChoices.unshift({ name: "None", value: null });
+
+          prompt({
+            type: "list",
+            name: "managers",
+            message: "Who is the employee's manager?",
+            choices: managerChoices,
+          }).then((response) => {
+            let managers = response.managers;
+            console.log(managers).query;
+          });
+        });
         //The unshift() method of Array instances adds the specified elements to the beginning of an array and returns the new length of the array
 
         //managerChoices.unshift({name: 'None', value: null})
