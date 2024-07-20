@@ -151,7 +151,6 @@ function addEmployee() {
     let lastName = response.last_name;
 
     findRoles().then((roles) => {
-      // map over roles to get role choices
       const roleChoices = roles.map(({ id, title }) => ({
         name: title,
         value: id,
@@ -164,35 +163,81 @@ function addEmployee() {
         choices: roleChoices,
       }).then((response) => {
         let roleId = response.roleId;
-        console.log(roleId).query;
-        //next query for all employees and map over data for managerChoices because a manager is an employee
-        findManager().then((options) => {
-          const managerChoices = options.map(({ first_name, last_name }) => ({
-            name: `${first_name} ${last_name}`, // Combine first_name and last_name into one string for the name property
-            value: `${first_name}_${last_name}`, // Create a unique value based on first_name and last_name
-          }));
 
-          // Add "None" option to the beginning of the managerChoices array
+        console.log(roleId);
+
+        findManager().then((options) => {
+          const managerChoices = options.map(
+            ({ id, first_name, last_name }) => ({
+              name: `${first_name} ${last_name}`,
+              value: id, // Use employee.id as the value
+            })
+          );
+
           managerChoices.unshift({ name: "None", value: null });
 
           prompt({
             type: "list",
-            name: "managers",
+            name: "managerId",
             message: "Who is the employee's manager?",
             choices: managerChoices,
           }).then((response) => {
-            let managers = response.managers;
-            console.log(managers).query;
+            let managerId = response.managerId;
+
+            console.log(managerId);
+
+            // Ensure managerId is correctly assigned to the id from managerChoices
+            if (managerId !== null) {
+              managerId = managerChoices.find(
+                (choice) => choice.value === managerId
+              ).value;
+            }
+
+            console.log(managerId);
+
+            const newEmployee = createEmployee(
+              firstName,
+              lastName,
+              roleId,
+              managerId // Use the manager's employee.id
+            );
+            console.log("New Employee Object:", newEmployee);
+
+            addEmployeeToDatabase(newEmployee);
           });
         });
-        //The unshift() method of Array instances adds the specified elements to the beginning of an array and returns the new length of the array
-
-        //managerChoices.unshift({name: 'None', value: null})
-
-        //then prompt for who is the employees manager by passing managerChoices to choices key
-
-        //then create an employee object and call createEmployee()
       });
     });
   });
+
+  function createEmployee(firstName, lastName, roleId, managerId) {
+    return {
+      first_name: firstName,
+      last_name: lastName,
+      role_id: roleId,
+      manager_id: managerId, // Set the manager's employee.id
+    };
+  }
+
+  function addEmployeeToDatabase(employee) {
+    const query = {
+      text: "INSERT INTO employee(first_name, last_name, role_id, manager_id) VALUES($1, $2, $3, $4)",
+      values: [
+        employee.first_name,
+        employee.last_name,
+        employee.role_id,
+        employee.manager_id,
+      ],
+    };
+
+    pool
+      .query(query)
+      .then(() => {
+        console.log("Employee added successfully");
+      })
+      .catch((error) => {
+        console.error("Error adding employee", error);
+      });
+  }
+  init();
 }
