@@ -124,7 +124,7 @@ function findManager() {
   return new Promise(async (resolve, reject) => {
     try {
       const result = await pool.query(
-        "SELECT first_name, last_name FROM employee"
+        "SELECT id, first_name, last_name FROM employee"
       );
       resolve(result.rows);
     } catch (error) {
@@ -234,10 +234,21 @@ function addEmployee() {
       .query(query)
       .then(() => {
         console.log("Employee added successfully");
+        init();
       })
       .catch((error) => {
         console.error("Error adding employee", error);
       });
   }
-  init();
+}
+
+function addDepartment() {
+  prompt([
+    {
+      name: "department_name",
+      message: "What is the department's name?",
+    },
+  ]).then((response) => {
+    let departmentName = response.department_name;
+  });
 }
