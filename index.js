@@ -53,6 +53,7 @@ function init() {
         break;
       case "Add a role":
         console.log("Add a role");
+        addRole();
         break;
       case "Add an employee":
         addEmployee();
@@ -120,6 +121,18 @@ function findRoles() {
   });
 }
 
+function findDepartment() {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const result = await pool.query("SELECT name FROM department");
+      resolve(result.rows);
+    } catch (error) {
+      console.error("Error executing query", error);
+      reject(error);
+    }
+  });
+}
+
 function findManager() {
   return new Promise(async (resolve, reject) => {
     try {
@@ -133,8 +146,6 @@ function findManager() {
     }
   });
 }
-
-function addRole() {}
 
 function addEmployee() {
   prompt([
@@ -250,5 +261,63 @@ function addDepartment() {
     },
   ]).then((response) => {
     let departmentName = response.department_name;
+
+    const newDepartment = createDepartment(departmentName);
+    console.log("New Department Object:", newDepartment);
+
+    addDepartmentToDatabase(newDepartment);
+  });
+}
+
+function createDepartment(name) {
+  return {
+    name: name,
+  };
+}
+
+function addDepartmentToDatabase(department) {
+  const query = {
+    text: "INSERT INTO department(name) VALUES($1)",
+    values: [department.name],
+  };
+
+  pool
+    .query(query)
+    .then(() => {
+      console.log("Department added successfully");
+      init();
+    })
+    .catch((error) => {
+      console.error("Error adding department", error);
+    });
+}
+
+function addRole() {
+  prompt([
+    {
+      name: "role_name",
+      message: "What is the name of the role?",
+    },
+    {
+      name: "role_salary",
+      message: "What is the salary of the role",
+    },
+  ]).then((response) => {
+    let roleName = response.role_name;
+    let roleSalary = response.role_salary;
+
+    findDepartment().then((departments) => {
+      const deptChoices = departments.map(({ name }) => ({
+        name: name,
+        name: name,
+      }));
+
+      prompt({
+        type: "list",
+        name: "department",
+        message: "Select the department for the role:",
+        choices: deptChoices,
+      });
+    });
   });
 }
