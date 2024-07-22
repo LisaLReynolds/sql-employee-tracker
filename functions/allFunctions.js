@@ -1,3 +1,17 @@
+const { Pool } = require("pg");
+const { init } = require("../index.js");
+const pool = new Pool(
+  {
+    user: "postgres",
+    password: "root",
+    host: "localhost",
+    database: "business_db",
+  },
+  console.log("Connected to the business_db database.")
+);
+
+// pool.connect();
+
 function allDepartments() {
   pool
     .query("SELECT * FROM department")

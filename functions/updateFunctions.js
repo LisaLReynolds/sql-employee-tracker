@@ -1,4 +1,17 @@
 const { findEmployee, findRoles } = require("./findFunctions");
+const { Pool } = require("pg");
+
+const pool = new Pool(
+  {
+    user: "postgres",
+    password: "root",
+    host: "localhost",
+    database: "business_db",
+  },
+  console.log("Connected to the business_db database.")
+);
+
+pool.connect();
 
 function updateEmpRole() {
   findEmployee().then((options) => {
