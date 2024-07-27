@@ -1,3 +1,5 @@
+const pool = require("../db/connection.js");
+
 function findDepartment() {
   return new Promise(async (resolve, reject) => {
     try {
@@ -10,7 +12,7 @@ function findDepartment() {
   });
 }
 
-function findManager() {
+function findEmployee() {
   return new Promise(async (resolve, reject) => {
     try {
       const result = await pool.query(
@@ -36,4 +38,4 @@ function findRoles() {
   });
 }
 
-module.exports = { findDepartment, findManager, findRoles };
+module.exports = { findDepartment, findEmployee, findRoles };

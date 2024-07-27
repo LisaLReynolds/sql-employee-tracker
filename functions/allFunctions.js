@@ -1,5 +1,9 @@
 const { Pool } = require("pg");
-const { init } = require("../index.js");
+//const { init } = require("../index.js");
+const init = require("../index.js");
+const pool = require("../db/connection.js");
+
+/*
 const pool = new Pool(
   {
     user: "postgres",
@@ -10,19 +14,37 @@ const pool = new Pool(
   console.log("Connected to the business_db database.")
 );
 
-// pool.connect();
+pool.connect();
+*/
 
+/*
 function allDepartments() {
+  //console.log("In ALl Functions INIT: ", init);
+
   pool
     .query("SELECT * FROM department")
     .then((result) => {
       console.table(result.rows);
-      init();
+      // init();
     })
     .catch((error) => {
       console.error("Error executing query", error);
-      init();
+      // init();
     });
+}
+*/
+
+async function allDepartments() {
+  //console.log("In ALl Functions INIT: ", init);
+
+  try {
+    const result = await pool.query("SELECT * FROM department;");
+    console.table(result.rows);
+    // init();
+    return;
+  } catch (error) {
+    console.error("Error executing query", error);
+  }
 }
 
 function allEmployees() {
@@ -30,7 +52,7 @@ function allEmployees() {
     .query("SELECT * FROM employee")
     .then((result) => {
       console.table(result.rows);
-      init();
+      // init();
     })
     .catch((error) => {
       console.error("Error executing query", error);
@@ -43,7 +65,7 @@ function allRoles() {
     .query("SELECT * FROM role")
     .then((result) => {
       console.table(result.rows);
-      init();
+      // init();
     })
     .catch((error) => {
       console.error("Error executing query", error);

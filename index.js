@@ -1,5 +1,5 @@
 const { prompt } = require("inquirer");
-const { Pool } = require("pg");
+//const { Pool } = require("pg");
 const logo = require("asciiart-logo");
 const config = require("./package.json");
 const {
@@ -14,24 +14,12 @@ const {
 } = require("./functions/addFunctions");
 const { updateEmpRole } = require("./functions/updateFunctions");
 
-//Connection pool to the database
-const pool = new Pool(
-  {
-    user: "postgres",
-    password: "root",
-    host: "localhost",
-    database: "business_db",
-  },
-  console.log("Connected to the business_db database.")
-);
-
-pool.connect();
-
 console.log(logo(config).render()); //displays sql employee manager logo
 
-init();
+//init();
 
-function init() {
+//function init() {
+const init = function () {
   prompt([
     {
       type: "list",
@@ -48,16 +36,16 @@ function init() {
         "Exit",
       ],
     },
-  ]).then((answers) => {
+  ]).then(async (answers) => {
     switch (answers.option) {
       case "View all departments":
-        allDepartments();
+        await allDepartments();
         break;
       case "View all roles":
-        allRoles();
+        await allRoles();
         break;
       case "View all employees":
-        allEmployees();
+        await allEmployees();
         break;
       case "Add a department":
         addDepartment();
@@ -78,7 +66,12 @@ function init() {
       default:
         process.exit();
     }
+    // Call Main Query/Inquirer Method
+    init();
   });
-}
+};
 
-module.exports = { init };
+init();
+
+// module.exports = { init };
+module.exports = init;

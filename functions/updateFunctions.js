@@ -1,4 +1,7 @@
 const { findEmployee, findRoles } = require("./findFunctions");
+const pool = require("../db/connection.js");
+
+/*
 const { Pool } = require("pg");
 
 const pool = new Pool(
@@ -12,6 +15,7 @@ const pool = new Pool(
 );
 
 pool.connect();
+*/
 
 function updateEmpRole() {
   findEmployee().then((options) => {

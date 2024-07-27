@@ -1,4 +1,7 @@
-const { findDepartment, findManager, findRoles } = require("./findFunctions");
+const { findDepartment, findEmployee, findRoles } = require("./findFunctions");
+const pool = require("../db/connection.js");
+const { prompt } = require("inquirer");
+const init = require("../index.js");
 
 function addDepartment() {
   prompt([
@@ -61,7 +64,7 @@ function addEmployee() {
 
         console.log(roleId);
 
-        findManager().then((options) => {
+        findEmployee().then((options) => {
           const managerChoices = options.map(
             ({ id, first_name, last_name }) => ({
               name: `${first_name} ${last_name}`,
