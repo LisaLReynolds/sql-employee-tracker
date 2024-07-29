@@ -8,7 +8,6 @@ const {
   findEmployee,
   findRoles,
 } = require("./functions/findFunctions");
-const { updateEmpRole } = require("./functions/updateFunctions");
 
 console.log(logo(config).render()); //displays sql employee manager logo
 
